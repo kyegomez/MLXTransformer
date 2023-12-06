@@ -1,15 +1,8 @@
-import math
-import time
-import mlx
-import datasets
 import mlx.core as mx
 import mlx.nn as nn
-import mlx.optimizers as optim
-import numpy as np
-from mlx.utils import tree_flatten
 
 
-class TransformerLM(nn.Module):
+class Transformer(nn.Module):
     """Transformer language model.
 
     Args:
