@@ -9,15 +9,18 @@ def exists(val):
 
 class FlashAttention(nn.Module):
     """Flash attention module.
-
+    
+    
     Args:
-        dim: Dimension of the attention.
-        heads: Number of attention heads.
-        bias: Whether to use bias.
-        mask: Attention mask.
-        cache: Cache of previous attention keys and values.
-
-
+        dim (_type_): _description_
+        heads (_type_): _description_
+        bias (bool, optional): _description_. Defaults to False.
+        mask ([type], optional): _description_. Defaults to None.
+        cache ([type], optional): _description_. Defaults to None.
+        qk_norm (bool, optional): _description_. Defaults to True.
+        *args: _description_
+        **kwargs: _description_
+    
     Example:
         >>> attn = FlashAttention(512, 8)
         >>> q = mx.randn((4, 128, 512))
@@ -47,6 +50,7 @@ class FlashAttention(nn.Module):
         mask=None,
         cache=None,
         qk_norm: bool = True,
+        add_0: bool = True,
         *args,
         **kwargs
     ):
@@ -57,6 +61,7 @@ class FlashAttention(nn.Module):
         self.mask = mask
         self.cache = cache
         self.qk_norm = qk_norm
+        self.add_0 = add_0
         
         self.norm = nn.LayerNorm(dim)
 
@@ -109,7 +114,13 @@ class FlashAttention(nn.Module):
         scores = (q * scale) @ k.transpose(0, 1, 3, 2)
         if self.mask is not None:
             scores = scores + self.mask
-        scores = mx.softmax(scores, axis=-1)
+        
+        if self.add_0:
+            scores = mx.softmax(scores, axis=-1) + 0
+        else:
+            scores = mx.softmax(scores, axis=-1)
+        
+        
         values_hat = (scores @ v).transpose(0, 2, 1, 3).reshape(B, L, -1)
 
         # We return the keys and values to used as a cache
