@@ -1,12 +1,13 @@
-import math 
+import math
 import time
-import numpy as np
+import mlx
+import datasets
 import mlx.core as mx
 import mlx.nn as nn
 import mlx.optimizers as optim
+import numpy as np
 from mlx.utils import tree_flatten
 
-import datasets
 
 class TransformerLM(nn.Module):
     """Transformer language model.
@@ -47,6 +48,14 @@ class TransformerLM(nn.Module):
     def __call__(
         self, x
     ):
+        """Computes the forward pass.
+
+        Args:
+            x (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         mask = nn.MultiHeadAttention.create_additive_causal_mask(
             x.shape[1]
         )
@@ -60,6 +69,16 @@ class TransformerLM(nn.Module):
         y,
         reduce=True
     ):
+        """Loss function.
+
+        Args:
+            x (_type_): _description_
+            y (_type_): _description_
+            reduce (bool, optional): _description_. Defaults to True.
+
+        Returns:
+            _type_: _description_
+        """
         logits = self(x)
         losses = nn.losses.cross_entropy(logits, y)
         mx.simpligy(losses)
