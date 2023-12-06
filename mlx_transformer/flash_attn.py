@@ -46,6 +46,7 @@ class FlashAttention(nn.Module):
         bias: bool = False,
         mask=None,
         cache=None,
+        qk_norm: bool = True,
         *args,
         **kwargs
     ):
@@ -55,6 +56,9 @@ class FlashAttention(nn.Module):
         self.bias = bias
         self.mask = mask
         self.cache = cache
+        self.qk_norm = qk_norm
+        
+        self.norm = nn.LayerNorm(dim)
 
         self.rope = nn.Rope(dim // heads, traditional=True)
         self.q_proj = nn.Linear(dim, dim, bias=bias)
@@ -75,6 +79,9 @@ class FlashAttention(nn.Module):
         q = self.q_proj(q)
         k = self.k_proj(k)
         v = self.v_proj(v)
+        
+        if self.qk_norm:
+            q, k = self.norm(q), self.norm(k)
 
         # Extract some shapes
         heads = self.heads
