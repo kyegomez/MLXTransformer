@@ -1,10 +1,7 @@
 import numpy as np
 
 
-def to_samples(
-    context_size,
-    dataset
-):
+def to_samples(context_size, dataset):
     """Transforms a dataset into samples.
 
     Args:
@@ -20,15 +17,12 @@ def to_samples(
     X = np.lib.stride_tricks.as_strided(
         dataset,
         shape=(samples, window_size),
-        strides=(dataset.itemsize, dataset.itemsize)
+        strides=(dataset.itemsize, dataset.itemsize),
     )
     return X[:, :-1], X[:, 1:]
 
-def iterate_batches(
-    batch_size,
-    context_size,
-    dataset
-):
+
+def iterate_batches(batch_size, context_size, dataset):
     """Iterates over batches of samples.
 
     Args:

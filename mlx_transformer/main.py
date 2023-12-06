@@ -10,7 +10,7 @@ class Transformer(nn.Module):
         depth: Number of transformer encoder layers.
         dim: Dimension of the transformer.
         heads: Number of attention heads.
-        
+
     Example:
         >>> model = TransformerLM(1000, 3, 512, 8)
         >>> x = mx.randn((4, 128)).astype(np.int32)
@@ -20,27 +20,19 @@ class Transformer(nn.Module):
         >>> model.loss(x, x)
         array(6.9077554, dtype=float32)
     """
-    def __init__(
-        self,
-        vocab_size: int,
-        depth: int,
-        dim: int,
-        heads: int
-    ):
+
+    def __init__(self, vocab_size: int, depth: int, dim: int, heads: int):
         super().__init__()
         # Embed the tokens
         self.embedding = nn.Embedding(vocab_size, dim)
-        
+
         # input: (batch, seq_len, dim) -> (batch, seq_len, dim)
         self.transformer = nn.TransformerEncoder(depth, dim, heads)
-        
-        
+
         # input: (batch, seq_len, dim) -> (batch, seq_len, vocab_size)
         self.out_proj = nn.Linear(dim, vocab_size)
-        
-    def __call__(
-        self, x
-    ):
+
+    def __call__(self, x):
         """Computes the forward pass.
 
         Args:
@@ -49,19 +41,12 @@ class Transformer(nn.Module):
         Returns:
             _type_: _description_
         """
-        mask = nn.MultiHeadAttention.create_additive_causal_mask(
-            x.shape[1]
-        )
+        mask = nn.MultiHeadAttention.create_additive_causal_mask(x.shape[1])
         x = self.embedding(x)
         x = self.transformer(x, mask)
         return self.out_proj(x)
-    
-    def loss(
-        self,
-        x,
-        y,
-        reduce=True
-    ):
+
+    def loss(self, x, y, reduce=True):
         """Loss function.
 
         Args:
@@ -75,10 +60,5 @@ class Transformer(nn.Module):
         logits = self(x)
         losses = nn.losses.cross_entropy(logits, y)
         mx.simpligy(losses)
-        
-        return mx.mean(losses) if reduce else mx.mean(
-            losses,
-            axis=(-1, -2)
-        )
-        
-        
+
+        return mx.mean(losses) if reduce else mx.mean(losses, axis=(-1, -2))
