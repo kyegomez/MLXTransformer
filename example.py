@@ -1,5 +1,4 @@
 from mlx_transformer.main import Transformer
-from mlx_transformer.flash_attn import FlashAttention
 from mlx.core.random.randint import randint
 
 
@@ -21,8 +20,11 @@ print(rand_int)  # Output: a random integer between 0 and 9
 
 # Generate a random array of integers within the interval [low, high)
 shape = [1, 10000, 512]  # Shape of the output array
-rand_array = randint(low, high, shape)
+q = randint(low, high, shape)
+k = randint(low, high, shape)
+v = randint(low, high, shape)
 
-print(rand_array)
-# Output: a 2D array with shape (3, 2) containing random integers between 0 and 9
+# Use the random array to perform a forward pass through the model
+output = model(q, k, v)
 
+print(output.shape)
