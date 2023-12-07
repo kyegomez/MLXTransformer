@@ -3,7 +3,12 @@ from mlx_transformer.flash_attn import FlashAttention
 from mlx.core.random.randint import randint
 
 
-model = Transformer(1000, 3, 512, 8)
+model = Transformer(
+    vocab_size=10000,
+    depth=12,
+    dim = 512,
+    heads = 8,
+)
 
 # Define the lower and upper bounds of the interval
 low = 0
@@ -15,7 +20,7 @@ rand_int = randint(low, high)
 print(rand_int)  # Output: a random integer between 0 and 9
 
 # Generate a random array of integers within the interval [low, high)
-shape = [3, 2]  # Shape of the output array
+shape = [1, 10000, 512]  # Shape of the output array
 rand_array = randint(low, high, shape)
 
 print(rand_array)
