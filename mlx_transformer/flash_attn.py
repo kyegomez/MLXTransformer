@@ -9,8 +9,8 @@ def exists(val):
 
 class FlashAttention(nn.Module):
     """Flash attention module.
-    
-    
+
+
     Args:
         dim (_type_): _description_
         heads (_type_): _description_
@@ -20,7 +20,7 @@ class FlashAttention(nn.Module):
         qk_norm (bool, optional): _description_. Defaults to True.
         *args: _description_
         **kwargs: _description_
-    
+
     Example:
         >>> attn = FlashAttention(512, 8)
         >>> q = mx.randn((4, 128, 512))
@@ -62,7 +62,7 @@ class FlashAttention(nn.Module):
         self.cache = cache
         self.qk_norm = qk_norm
         self.add_0 = add_0
-        
+
         self.norm = nn.LayerNorm(dim)
 
         self.rope = nn.Rope(dim // heads, traditional=True)
@@ -84,7 +84,7 @@ class FlashAttention(nn.Module):
         q = self.q_proj(q)
         k = self.k_proj(k)
         v = self.v_proj(v)
-        
+
         if self.qk_norm:
             q, k = self.norm(q), self.norm(k)
 
@@ -114,13 +114,12 @@ class FlashAttention(nn.Module):
         scores = (q * scale) @ k.transpose(0, 1, 3, 2)
         if self.mask is not None:
             scores = scores + self.mask
-        
+
         if self.add_0:
             scores = mx.softmax(scores, axis=-1) + 0
         else:
             scores = mx.softmax(scores, axis=-1)
-        
-        
+
         values_hat = (scores @ v).transpose(0, 2, 1, 3).reshape(B, L, -1)
 
         # We return the keys and values to used as a cache

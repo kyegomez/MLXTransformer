@@ -1,12 +1,12 @@
-from mlx_transformer.main import Transformer
 from mlx.core.random.randint import randint
 
+from mlx_transformer.main import Transformer
 
 model = Transformer(
     vocab_size=10000,
     depth=12,
-    dim = 512,
-    heads = 8,
+    dim=512,
+    heads=8,
 )
 
 # Define the lower and upper bounds of the interval
