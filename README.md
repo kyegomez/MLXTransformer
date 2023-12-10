@@ -4,7 +4,7 @@
 Implementation of high performance transformer modules in MLX by apple
 
 # Install
-`pip3 install --uprgade mlx-transformer`
+`pip3 install --upgrade mlx-transformer`
 
 
 ## Usage
